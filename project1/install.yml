@@ -1,0 +1,18 @@
+# In this install.yml file im going to install Apache and Samba services.
+
+---
+- hosts: grupo1
+  tasks:
+    - name: Apache Install
+      yum: name=httpd state=latest
+    - name: Install Samba
+      yum: name=samba state=latest
+    - name: Starting Services
+      service:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      with_items:
+        - httpd
+        - smb 
+...
