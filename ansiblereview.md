@@ -15,7 +15,7 @@ ssh-copy-id @ remotehost
 EPEL repository.
 (with Centos 7.4 EPEL repository is not necessary.)
 
-# 1.3 inventary management
+#  Inventary management
 Remote hosts needs to be defined at inventary file.
 Remote host are specified by their FQDN or IP adress.
 -i <--- inventary host
@@ -26,7 +26,7 @@ Create a ansible directory, and put there a inventary file called inventario.
 [all]
 r2d2
 deathstar
-falconmilenario
+milenaryfalcon
 [group1]
 r2d2
 [group2]
@@ -45,7 +45,7 @@ deathstar
 
 ##### The ansible.cfg
 The ansible.cfg is the configuration file of ansible, is located at /etc/ansible/ansible.cfg
-This can be copied at project path as .ansible.cfg and be customized.
+This can be copied at project path as .ansible.cfg and can be customized.
 Also pre determinate module could be defined in ansible.cfg file.
 With ansible --version you are able to see the version,path of ansible.cfg and stuff.
 In order to scalate privileges, create a sudo file at hosts managed by ansible.
@@ -89,10 +89,11 @@ ansible-doc -l | grep "user"
 ```
 ######  Creating YAML files.
 Content
-Dictionary: key:value
+Dictionary: a dictionary is represented in a simple key: value form (the colon must be followed by a space)
+
 Lists: used to represent a list of elements.
-The list are numbered as - item [with a space after - is mandatory]
-cchain values can be used with "" or ''
+The list are numbered as - item [followed by space after - is mandatory]
+chain values can be used with "" or ''
 
 Doing a syntax check in YAML file:
 ```
@@ -119,6 +120,63 @@ Installing Apache and Samba services, also starting services with Ansible.
       with_items:
         - httpd
         - smb
+    - name: Firewall enable
+      firewalld:
+      service: https
+      permanent: true
+      immediate: true
+      state: enabled
+    - name: copiando contenido :v
+      copy:
+        content:"Welcome to my web"
+        dest: /var/www/html/index.html
 ...
 
 ```
+###### Playbooks execution:
+
+playbooks are executed with arguments in order to check syntax:
+```
+ ansible-playbook --syntax-check myplaybook.yml
+```
+check mode without apply any change,also can be done with --check
+```
+ ansible-playbook -C myplaybook.yml
+```
+Running ansible playbook step by step
+```
+ ansible-playbook -step myplaybook.yml
+```
+
+ansible grupo1 -m yum -a 'name=httpd,samba state=absent'
+
+###### Working with variables
+Variables can be defined in playbook file:
+vars.yml 
+---
+   db_package:mariadb-server
+   db_service:mariadb
+...
+
+play_vars.yml
+
+---
+ - hosts: group2
+   vars_files:
+     - vars.yml
+   tasks:
+     - name: Instalar {{db_package}}  // variables are referenced using double brackets
+       yum: 
+         name: "{{ db_package }}" // if a variable is used as 1st element, is mandatory to use double quotation marks "{{ my_variable}}"
+         state: latest
+     - name: iniciando {{ db_service }}
+       service: 
+         name: "{{ db_service }}"
+         state: started
+         enabled: true
+...
+
+
+
+References
+[Yaml Documentation](http://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html#yaml-basics)

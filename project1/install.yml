@@ -1,5 +1,6 @@
 # In this install.yml file im going to install Apache and Samba services.
 
+
 ---
 - hosts: grupo1
   tasks:
@@ -15,4 +16,15 @@
       with_items:
         - httpd
         - smb 
+    - name: Enable firewall
+      firewalld: 
+        service: https
+        permanent: true
+        immediate: true
+        state: enabled
+    - name: copy content
+      copy:
+        content: "Welcome to my web"
+        dest: /var/www/html/index.html 
+
 ...

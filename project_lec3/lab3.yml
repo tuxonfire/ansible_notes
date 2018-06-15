@@ -1,0 +1,27 @@
+# 3rd Laboratory
+---
+- hosts: grupo2
+  tasks:
+    - name: Install Apache
+      yum:
+        name: httpd
+        state: latest
+
+    - name: Start Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Enable firewall
+      firewalld:
+        port: 443/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+    - name: index content
+      copy:
+        content: "W E L C O M E to M Y W E B S E R V E R "
+        dest: /var/www/html/index.html
+        mode: 0644
+...

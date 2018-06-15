@@ -1,0 +1,118 @@
+> FIREWALLD    (/usr/lib/python2.7/site-packages/ansible/modules/system/firewalld.py)
+
+        This module allows for addition or deletion of services and ports either tcp or udp in either running or permanent firewalld
+        rules.
+
+OPTIONS (= is mandatory):
+
+- immediate
+        Should this configuration be applied immediately, if set as permanent
+        [Default: False]
+        version_added: 1.9
+
+- interface
+        The interface you would like to add/remove to/from a zone in firewalld
+        [Default: None]
+        version_added: 2.1
+
+- masquerade
+        The masquerade setting you would like to enable/disable to/from zones within firewalld
+        [Default: None]
+        version_added: 2.1
+
+- permanent
+        Should this configuration be in the running firewalld configuration or persist across reboots. As of Ansible version 2.3,
+        permanent operations can operate on firewalld configs when it's not running (requires firewalld >= 3.0.9). (NOTE: If this is
+        false, immediate is assumed true.)
+        [Default: None]
+
+- port
+        Name of a port or port range to add/remove to/from firewalld. Must be in the form PORT/PROTOCOL or PORT-PORT/PROTOCOL for port
+        ranges.
+        [Default: None]
+
+- rich_rule
+        Rich rule to add/remove to/from firewalld.
+        [Default: None]
+
+- service
+        Name of a service to add/remove to/from firewalld - service must be listed in output of firewall-cmd --get-services.
+        [Default: None]
+
+- source
+        The source/network you would like to add/remove to/from firewalld
+        [Default: None]
+        version_added: 2.0
+
+= state
+        Should this port accept(enabled) or reject(disabled) connections.
+        (Choices: enabled, disabled)
+
+- timeout
+        The amount of time the rule should be in effect for when non-permanent.
+        [Default: 0]
+
+- zone
+        The firewalld zone to add/remove to/from (NOTE: default zone can be configured per system but "public" is default from
+        upstream. Available choices can be extended based on per-system configs, listed here are "out of the box" defaults).
+        (Choices: work, drop, internal, external, trusted, home, dmz, public, block)[Default: system-default(public)]
+
+
+NOTES:
+      * Not tested on any Debian based system.
+      * Requires the python2 bindings of firewalld, which may not be installed by default if the distribution switched to python
+        3
+
+REQUIREMENTS:  firewalld >= 0.2.11
+
+AUTHOR: Adam Miller (@maxamillion)
+        METADATA:
+          status:
+          - preview
+          supported_by: community
+        
+
+EXAMPLES:
+- firewalld:
+    service: https
+    permanent: true
+    state: enabled
+
+- firewalld:
+    port: 8081/tcp
+    permanent: true
+    state: disabled
+
+- firewalld:
+    port: 161-162/udp
+    permanent: true
+    state: enabled
+
+- firewalld:
+    zone: dmz
+    service: http
+    permanent: true
+    state: enabled
+
+- firewalld:
+    rich_rule: 'rule service name="ftp" audit limit value="1/m" accept'
+    permanent: true
+    state: enabled
+
+- firewalld:
+    source: 192.0.2.0/24
+    zone: internal
+    state: enabled
+
+- firewalld:
+    zone: trusted
+    interface: eth2
+    permanent: true
+    state: enabled
+
+- firewalld:
+    masquerade: yes
+    state: enabled
+    permanent: true
+    zone: dmz
+
